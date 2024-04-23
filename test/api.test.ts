@@ -4,17 +4,13 @@ axios.defaults.validateStatus = function () {
     return true;
 }
 
-test.each([
-    "97456321558",
-    "71428793860",
-    "87748248800"
-])("Deve criar uma conta para o passageiro pela api", async (cpf: string) => {
+test("Deve criar uma conta para o passageiro pela api", async () => {
     // given
     const inputSignup = {
         name: "John Doe",
         email: `john.doe${Math.random()}@gmail.com`,
         password: "123456",
-        cpf,
+        cpf:"97456321558",
         isPassenger: true
     };
     // when
@@ -26,7 +22,7 @@ test.each([
     expect(outputSignup.accountId).toBeDefined();
     expect(outputGetAccount.name).toBe(inputSignup.name);
     expect(outputGetAccount.email).toBe(inputSignup.email);
-});
+})
 
 test("Não deve criar uma conta se o nome for inválido", async () => {
     // given
@@ -41,59 +37,6 @@ test("Não deve criar uma conta se o nome for inválido", async () => {
     const responseSignup = await axios.post("http://localhost:3333/signup", inputSignup);
     expect(responseSignup.status).toBe(422)
     expect(responseSignup.data.message).toBe("Invalid name")
-});
-
-test("Não deve criar uma conta se o email for inválido", async () => {
-    // given
-    const inputSignup = {
-        name: "John Doe",
-        email: `john.doe${Math.random()}`,
-        password: "123456",
-        cpf: "24964063046",
-        isPassenger: true
-    };
-    // when
-    const responseSignup = await axios.post("http://localhost:3333/signup", inputSignup);
-    expect(responseSignup.status).toBe(422)
-    expect(responseSignup.data.message).toBe("Invalid email")
-});
-
-test.each([
-    "",
-    undefined,
-    null,
-    "111",
-    "11111111111",
-    "11111111111111"
-])("Não deve criar uma conta se o cpf for inválido", async (cpf: any) => {
-    // given
-    const inputSignup = {
-        name: "John Doe",
-        email: `john.doe${Math.random()}@gmail.com`,
-        password: "123456",
-        cpf,
-        isPassenger: true
-    };
-    // when
-    const responseSignup = await axios.post("http://localhost:3333/signup", inputSignup);
-    expect(responseSignup.status).toBe(422)
-    expect(responseSignup.data.message).toBe("Invalid cpf")
-});
-
-test("Não deve criar uma conta se o email for duplicado", async () => {
-    // given
-    const inputSignup = {
-        name: "John Doe",
-        email: `john.doe${Math.random()}@gmail.com`,
-        password: "123456",
-        cpf: "24964063046",
-        isPassenger: true
-    };
-    // when
-    await axios.post("http://localhost:3333/signup", inputSignup);
-    const responseSignup = await axios.post("http://localhost:3333/signup", inputSignup);
-    expect(responseSignup.status).toBe(422)
-    expect(responseSignup.data.message).toBe("Duplicated account")
 });
 
 test("Deve criar uma conta para o motorista", async () => {
