@@ -14,6 +14,23 @@ class RideDAODatabase implements RideDAO {
         await connection.$pool.end();
         return ride;
     }
+
+    async list(): Promise<any> {
+        const connection = pgp()("postgres://postgres:postgres@localhost:5433/app");
+        const rides = await connection.query("select * from cccat14.ride", []);
+        await connection.$pool.end();
+        return rides;
+    }
+
+    async getActiveRideByPassengerId(passengerId: string): Promise<any> {
+        const connection = pgp()("postgres://postgres:postgres@localhost:5433/app");
+        const [ride] = await connection.query(
+            "select * from cccat14.ride where passenger_id = $1 and status in ('requested', 'accepted', 'in_progress')",
+            [passengerId]
+        );
+        await connection.$pool.end();
+        return ride;
+    }
 }
 
 export default RideDAODatabase;
