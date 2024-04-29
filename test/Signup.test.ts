@@ -1,26 +1,27 @@
 import Signup from "../src/Signup";
 import GetAccount from "../src/GetAccount";
 import sinon, {spy} from "sinon";
-import AccountDAO from "../src/AccountDAO";
+import AccountRepository from "../src/AccountRepository";
 import Logger from "../src/Logger";
-import AccountDAODatabase from "../src/AccountDAODatabase";
+import AccountRepositoryDatabase from "../src/AccountRepositoryDatabase";
 import LoggerConsole from "../src/LoggerConsole";
-import accountDAO from "../src/AccountDAO";
+import accountDAO from "../src/AccountRepository";
 import logger from "../src/Logger";
+import Account from "../src/Account";
 
 let signup: Signup;
 let getAccount: GetAccount;
 
 beforeEach(() => {
-    const accountDAO = new AccountDAODatabase();
+    const accountDAO = new AccountRepositoryDatabase();
     const logger = new LoggerConsole();
     signup = new Signup(accountDAO, logger);
     getAccount = new GetAccount(accountDAO);
 })
 
 test("Deve criar uma conta para o passageiro com stub", async () => {
-    const stubAccountDAOSave = sinon.stub(AccountDAODatabase.prototype, "save").resolves();
-    const stubAccountDAOGetByEmail = sinon.stub(AccountDAODatabase.prototype, "getByEmail").resolves(null);
+    const stubAccountDAOSave = sinon.stub(AccountRepositoryDatabase.prototype, "save").resolves();
+    const stubAccountDAOGetByEmail = sinon.stub(AccountRepositoryDatabase.prototype, "getByEmail").resolves(undefined);
 
     const inputSignup = {
         name: "John Doe",
@@ -33,10 +34,10 @@ test("Deve criar uma conta para o passageiro com stub", async () => {
     const outputSignup = await signup.execute(inputSignup);
     expect(outputSignup.accountId).toBeDefined();
 
-    const stubAccountDAOGetById = sinon.stub(AccountDAODatabase.prototype, "getById").resolves(inputSignup);
+    const stubAccountDAOGetById = sinon.stub(AccountRepositoryDatabase.prototype, "getById").resolves(Account.create(inputSignup.name, inputSignup.email, inputSignup.cpf, "", inputSignup.isPassenger, false));
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
-    expect(outputGetAccount.name).toBe(inputSignup.name);
-    expect(outputGetAccount.email).toBe(inputSignup.email);
+    expect(outputGetAccount!!.name).toBe(inputSignup.name);
+    expect(outputGetAccount!!.email).toBe(inputSignup.email);
 
     stubAccountDAOSave.restore();
     stubAccountDAOGetByEmail.restore();
@@ -52,7 +53,7 @@ test("Deve criar uma conta para o passageiro com fake", async () => {
         password: "123456"
     };
 
-    const accountDAO: AccountDAO = {
+    const accountDAO: AccountRepository = {
         async getByEmail(email: string): Promise<any> {
             return undefined;
         },
@@ -74,8 +75,8 @@ test("Deve criar uma conta para o passageiro com fake", async () => {
     expect(outputSignup.accountId).toBeDefined();
 
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
-    expect(outputGetAccount.name).toBe(inputSignup.name);
-    expect(outputGetAccount.email).toBe(inputSignup.email);
+    expect(outputGetAccount!!.name).toBe(inputSignup.name);
+    expect(outputGetAccount!!.email).toBe(inputSignup.email);
 });
 
 test("Não deve criar uma conta se o nome for inválido", async () => {
@@ -139,8 +140,8 @@ test("Deve criar uma conta para o motorista", async () => {
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
 
     expect(outputSignup.accountId).toBeDefined();
-    expect(outputGetAccount.name).toBe(inputSignup.name);
-    expect(outputGetAccount.email).toBe(inputSignup.email);
+    expect(outputGetAccount!!.name).toBe(inputSignup.name);
+    expect(outputGetAccount!!.email).toBe(inputSignup.email);
     expect(spyLoggerLog.calledOnce).toBeTruthy();
     expect(spyLoggerLog.calledWith("signup John Doe")).toBeTruthy();
 });
