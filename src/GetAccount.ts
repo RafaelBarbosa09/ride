@@ -2,11 +2,11 @@ import AccountRepository from "./AccountRepository";
 import AccountRepositoryDatabase from "./AccountRepositoryDatabase";
 
 class GetAccount {
-    constructor(private accountDAO: AccountRepository) {
+    constructor(private accountRepository: AccountRepository) {
     }
 
     async execute(accountId: string) {
-        return await this.accountDAO.getById(accountId);
+        return await this.accountRepository.getById(accountId);
     }
 }
 

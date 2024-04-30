@@ -16,15 +16,15 @@ let acceptRide: AcceptRide;
 let startRide: StartRide;
 
 beforeEach(() => {
-    const accountDAO = new AccountRepositoryDatabase();
-    const rideDAO = new RideRepositoryDatabase();
+    const accountRepository = new AccountRepositoryDatabase();
+    const rideRepository = new RideRepositoryDatabase();
     const logger = new LoggerConsole();
-    signup = new Signup(accountDAO, logger);
-    getAccount = new GetAccount(accountDAO);
-    requestRide = new RequestRide(rideDAO, accountDAO,logger);
-    getRide = new GetRide(rideDAO, logger);
-    acceptRide = new AcceptRide(rideDAO, accountDAO);
-    startRide = new StartRide(rideDAO);
+    signup = new Signup(accountRepository, logger);
+    getAccount = new GetAccount(accountRepository);
+    requestRide = new RequestRide(rideRepository, accountRepository,logger);
+    getRide = new GetRide(rideRepository, logger);
+    acceptRide = new AcceptRide(rideRepository, accountRepository);
+    startRide = new StartRide(rideRepository);
 })
 
 test("Deve iniciar uma corrida", async () => {

@@ -3,13 +3,13 @@ import RideRepository from "./RideRepository";
 import AccountRepository from "./AccountRepository";
 
 class StartRide {
-    constructor(private rideDAO: RideRepository) {}
+    constructor(private rideRepository: RideRepository) {}
 
     async execute(input: any) {
-        const ride = await this.rideDAO.getById(input.rideId);
+        const ride = await this.rideRepository.getById(input.rideId);
         if(!ride) throw new Error("Ride not found");
         ride.start();
-        await this.rideDAO.update(ride);
+        await this.rideRepository.update(ride);
     }
 }
 
