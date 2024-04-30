@@ -4,7 +4,7 @@ import AccountRepositoryDatabase from "../src/AccountRepositoryDatabase";
 import LoggerConsole from "../src/LoggerConsole";
 import RequestRide from "../src/RequestRide";
 import GetRide from "../src/GetRide";
-import RideDAODatabase from "../src/RideDAODatabase";
+import RideRepositoryDatabase from "../src/RideRepositoryDatabase";
 import AcceptRide from "../src/AcceptRide";
 
 let signup: Signup;
@@ -15,7 +15,7 @@ let acceptRide: AcceptRide;
 
 beforeEach(() => {
     const accountDAO = new AccountRepositoryDatabase();
-    const rideDAO = new RideDAODatabase();
+    const rideDAO = new RideRepositoryDatabase();
     const logger = new LoggerConsole();
     signup = new Signup(accountDAO, logger);
     getAccount = new GetAccount(accountDAO);
@@ -61,7 +61,7 @@ test("Deve aceitar uma corrida", async () => {
 
     const outputGetRide = await getRide.execute(outputRequestRide.rideId);
     expect(outputGetRide.status).toBe("accepted");
-    expect(outputGetRide.driver_id).toBe(outputSignupDriver.accountId);
+    expect(outputGetRide.driverId).toBe(outputSignupDriver.accountId);
 });
 
 test("Não deve aceitar uma corrida se a conta não for de um motorista", async () => {

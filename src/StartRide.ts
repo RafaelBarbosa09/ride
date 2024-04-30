@@ -1,13 +1,14 @@
 import crypto from "crypto";
-import RideDAO from "./RideDAO";
+import RideRepository from "./RideRepository";
 import AccountRepository from "./AccountRepository";
 
 class StartRide {
-    constructor(private rideDAO: RideDAO) {}
+    constructor(private rideDAO: RideRepository) {}
 
     async execute(input: any) {
         const ride = await this.rideDAO.getById(input.rideId);
-        ride.status = "in_progress"
+        if(!ride) throw new Error("Ride not found");
+        ride.start();
         await this.rideDAO.update(ride);
     }
 }
