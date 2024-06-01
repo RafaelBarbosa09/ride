@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "npx nodemon src/api.ts",
+    "start": "npx nodemon src/main.ts",
     "test": "npx jest",
     "coverage": "npx jest --coverage",
     "watchAll": "npx jest --watchAll"

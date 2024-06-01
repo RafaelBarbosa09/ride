@@ -1,18 +1,22 @@
-import Signup from "../src/Signup";
-import GetAccount from "../src/GetAccount";
-import AccountRepositoryDatabase from "../src/AccountRepositoryDatabase";
-import LoggerConsole from "../src/LoggerConsole";
-import RequestRide from "../src/RequestRide";
-import GetRide from "../src/GetRide";
-import RideRepositoryDatabase from "../src/RideRepositoryDatabase";
+import Signup from "../src/application/usecase/Signup";
+import GetAccount from "../src/application/usecase/GetAccount";
+import AccountRepositoryDatabase from "../src/infra/repository/AccountRepositoryDatabase";
+import LoggerConsole from "../src/infra/logger/LoggerConsole";
+import RequestRide from "../src/application/usecase/RequestRide";
+import GetRide from "../src/application/usecase/GetRide";
+import RideRepositoryDatabase from "../src/infra/repository/RideRepositoryDatabase";
+import PostgresAdapter from "../src/infra/database/PostgresAdapter";
+import DatabaseConnection from "../src/infra/database/DatabaseConnection";
 
 let signup: Signup;
 let getAccount: GetAccount;
 let requestRide: RequestRide;
 let getRide: GetRide;
+let databaseConnection: DatabaseConnection;
 
 beforeEach(() => {
-    const accountRepository = new AccountRepositoryDatabase();
+    databaseConnection = new PostgresAdapter();
+    const accountRepository = new AccountRepositoryDatabase(databaseConnection);
     const rideRepository = new RideRepositoryDatabase();
     const logger = new LoggerConsole();
     signup = new Signup(accountRepository, logger);
@@ -96,3 +100,7 @@ test("Não deve solicitar uma corrida se a conta não existir", async () => {
     }
     await expect(() => requestRide.execute(inputRequestRide)).rejects.toThrow(new Error("Account does not exists"));
 });
+
+afterEach(async () => {
+    await databaseConnection.close();
+})

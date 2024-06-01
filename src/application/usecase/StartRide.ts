@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import RideRepository from "./RideRepository";
-import AccountRepository from "./AccountRepository";
+import RideRepository from "../repository/RideRepository";
+import AccountRepository from "../repository/AccountRepository";
 
 class StartRide {
     constructor(private rideRepository: RideRepository) {}

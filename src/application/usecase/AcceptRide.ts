@@ -1,5 +1,5 @@
-import RideRepository from "./RideRepository";
-import AccountRepository from "./AccountRepository";
+import RideRepository from "../repository/RideRepository";
+import AccountRepository from "../repository/AccountRepository";
 
 class AcceptRide {
     constructor(private rideRepository: RideRepository, private accountRepository: AccountRepository) {}

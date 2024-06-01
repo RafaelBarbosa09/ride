@@ -1,6 +1,6 @@
-import RideRepository from "./RideRepository";
+import RideRepository from "../../application/repository/RideRepository";
 import pgp from "pg-promise";
-import Ride from "./Ride";
+import Ride from "../../domain/Ride";
 
 class RideRepositoryDatabase implements RideRepository {
     async save (ride: Ride) {

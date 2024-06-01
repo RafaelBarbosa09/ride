@@ -1,5 +1,4 @@
-import AccountRepository from "./AccountRepository";
-import AccountRepositoryDatabase from "./AccountRepositoryDatabase";
+import AccountRepository from "../repository/AccountRepository";
 
 class GetAccount {
     constructor(private accountRepository: AccountRepository) {

@@ -1,6 +1,6 @@
-import AccountRepository from "./AccountRepository";
-import Logger from "./Logger";
-import Account from "./Account";
+import AccountRepository from "../repository/AccountRepository";
+import Logger from "../logger/Logger";
+import Account from "../../domain/Account";
 
 class Signup {
     accountRepository: AccountRepository;

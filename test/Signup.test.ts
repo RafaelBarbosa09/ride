@@ -1,17 +1,21 @@
-import Signup from "../src/Signup";
-import GetAccount from "../src/GetAccount";
+import Signup from "../src/application/usecase/Signup";
+import GetAccount from "../src/application/usecase/GetAccount";
 import sinon, {spy} from "sinon";
-import AccountRepository from "../src/AccountRepository";
-import Logger from "../src/Logger";
-import AccountRepositoryDatabase from "../src/AccountRepositoryDatabase";
-import LoggerConsole from "../src/LoggerConsole";
-import Account from "../src/Account";
+import AccountRepository from "../src/application/repository/AccountRepository";
+import Logger from "../src/application/logger/Logger";
+import AccountRepositoryDatabase from "../src/infra/repository/AccountRepositoryDatabase";
+import LoggerConsole from "../src/infra/logger/LoggerConsole";
+import Account from "../src/domain/Account";
+import PostgresAdapter from "../src/infra/database/PostgresAdapter";
+import DatabaseConnection from "../src/infra/database/DatabaseConnection";
 
 let signup: Signup;
 let getAccount: GetAccount;
+let databaseConnection: DatabaseConnection;
 
 beforeEach(() => {
-    const accountRepository = new AccountRepositoryDatabase();
+    databaseConnection = new PostgresAdapter();
+    const accountRepository = new AccountRepositoryDatabase(databaseConnection);
     const logger = new LoggerConsole();
     signup = new Signup(accountRepository, logger);
     getAccount = new GetAccount(accountRepository);
@@ -34,8 +38,8 @@ test("Deve criar uma conta para o passageiro com stub", async () => {
 
     const stubAccountRepositoryGetById = sinon.stub(AccountRepositoryDatabase.prototype, "getById").resolves(Account.create(inputSignup.name, inputSignup.email, inputSignup.cpf, "", inputSignup.isPassenger, false));
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
-    expect(outputGetAccount!!.name).toBe(inputSignup.name);
-    expect(outputGetAccount!!.email).toBe(inputSignup.email);
+    expect(outputGetAccount?.name).toBe(inputSignup.name);
+    expect(outputGetAccount?.email).toBe(inputSignup.email);
 
     stubAccountRepositorySave.restore();
     stubAccountRepositoryGetByEmail.restore();
@@ -73,8 +77,8 @@ test("Deve criar uma conta para o passageiro com fake", async () => {
     expect(outputSignup.accountId).toBeDefined();
 
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
-    expect(outputGetAccount!!.name).toBe(inputSignup.name);
-    expect(outputGetAccount!!.email).toBe(inputSignup.email);
+    expect(outputGetAccount?.name).toBe(inputSignup.name);
+    expect(outputGetAccount?.email).toBe(inputSignup.email);
 });
 
 test("Não deve criar uma conta se o nome for inválido", async () => {
@@ -138,8 +142,8 @@ test("Deve criar uma conta para o motorista", async () => {
     const outputGetAccount = await getAccount.execute(outputSignup.accountId);
 
     expect(outputSignup.accountId).toBeDefined();
-    expect(outputGetAccount!!.name).toBe(inputSignup.name);
-    expect(outputGetAccount!!.email).toBe(inputSignup.email);
+    expect(outputGetAccount?.name).toBe(inputSignup.name);
+    expect(outputGetAccount?.email).toBe(inputSignup.email);
     expect(spyLoggerLog.calledOnce).toBeTruthy();
     expect(spyLoggerLog.calledWith("signup John Doe")).toBeTruthy();
 });
@@ -156,3 +160,7 @@ test("Não deve criar uma conta para o motorista com a placa inválida", async (
     };
     await expect(() => signup.execute(inputSignup)).rejects.toThrow(new Error("Invalid car plate"));
 });
+
+afterEach(async () => {
+    await databaseConnection.close();
+})
